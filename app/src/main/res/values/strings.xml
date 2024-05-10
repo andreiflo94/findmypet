@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">findmypet</string>
+
+    <string name="app_generic_error">There was an error, please try again later</string>
+    <string name="pet_photo_desc">photo of the pet</string>
+</resources>
