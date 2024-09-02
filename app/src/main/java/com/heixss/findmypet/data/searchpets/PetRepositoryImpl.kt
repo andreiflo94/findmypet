@@ -8,7 +8,7 @@ import com.heixss.findmypet.domain.searchpets.Pet
 import com.heixss.findmypet.domain.searchpets.PetRepository
 import javax.inject.Inject
 
-class PetRepositoryImpl @Inject constructor(private val remoteApi: RemoteApi) : PetRepository {
+class PetRepositoryImpl @Inject constructor(private val remoteApi: FakeRemoteApi) : PetRepository {
 
     override fun getPetPager(query: String): Pager<Int, Pet> {
         return Pager(

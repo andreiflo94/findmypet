@@ -19,6 +19,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -65,6 +66,7 @@ fun UserProfileScreen(
     profileScreenState: State<ProfileScreenState>, onEditClick: (
         firstName: String, lastName: String, address: String, phone: String, email: String
     ) -> Unit,
+    onAddPet: () -> Unit,
     onCancelEdit: () -> Unit,
     logOut: () -> Unit
 ) {
@@ -149,7 +151,7 @@ fun UserProfileScreen(
 
                 )
                 user?.pets?.let {
-                    PetCarousel(pets = it)
+                    PetCarousel(pets = it, onAddPet)
                 }
             }
         }
@@ -178,7 +180,11 @@ fun UserDetails(
     ) {
         firstName?.let {
             UserInfoItem(
-                label = "First Name", vParameter = it, isLoading = isLoading, isEditing = isEditing, onValueChanged = onFirstNameChanged
+                label = "First Name",
+                vParameter = it,
+                isLoading = isLoading,
+                isEditing = isEditing,
+                onValueChanged = onFirstNameChanged
             )
         }
         lastName?.let {
@@ -192,17 +198,29 @@ fun UserDetails(
         }
         address?.let {
             UserInfoItem(
-                label = "Address", vParameter = it, isLoading = isLoading, isEditing = isEditing, onValueChanged = onAddressChanged
+                label = "Address",
+                vParameter = it,
+                isLoading = isLoading,
+                isEditing = isEditing,
+                onValueChanged = onAddressChanged
             )
         }
         phone?.let {
             UserInfoItem(
-                label = "Phone", vParameter = it, isLoading = isLoading, isEditing = isEditing, onValueChanged = onPhoneChanged
+                label = "Phone",
+                vParameter = it,
+                isLoading = isLoading,
+                isEditing = isEditing,
+                onValueChanged = onPhoneChanged
             )
         }
         email?.let {
             UserInfoItem(
-                label = "Email", vParameter = it, isLoading = isLoading, isEditing = isEditing, onValueChanged = onEmailChanged
+                label = "Email",
+                vParameter = it,
+                isLoading = isLoading,
+                isEditing = isEditing,
+                onValueChanged = onEmailChanged
             )
         }
     }
@@ -210,7 +228,11 @@ fun UserDetails(
 
 @Composable
 fun UserInfoItem(
-    label: String, vParameter: String, isLoading: Boolean, isEditing: Boolean, onValueChanged: (String) -> Unit
+    label: String,
+    vParameter: String,
+    isLoading: Boolean,
+    isEditing: Boolean,
+    onValueChanged: (String) -> Unit
 ) {
     var value by remember { mutableStateOf(vParameter) }
     TextField(
@@ -221,7 +243,10 @@ fun UserInfoItem(
         },
         label = {
             Text(
-                text = "$label: ", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary
+                text = "$label: ",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.secondary
             )
         },
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
@@ -232,12 +257,17 @@ fun UserInfoItem(
 }
 
 @Composable
-fun PetCarousel(pets: List<Pet>) {
+fun PetCarousel(pets: List<Pet>, onAddPet: () -> Unit) {
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(10.dp), horizontalArrangement = Arrangement.Start
+            .padding(10.dp),
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.CenterVertically
     ) {
+        item {
+            AddPet(onAddPet)
+        }
         items(pets) { pet ->
             PetItem(pet)
         }
@@ -255,7 +285,8 @@ fun PetItem(pet: Pet) {
             modifier = Modifier.padding(16.dp)
         ) {
             AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current).data(pet.petPhoto).crossfade(true).build(),
+                model = ImageRequest.Builder(LocalContext.current).data(pet.petPhoto)
+                    .crossfade(true).build(),
 
                 contentDescription = "photo", contentScale = ContentScale.Crop, modifier = Modifier
                     .clip(CircleShape)
@@ -264,13 +295,44 @@ fun PetItem(pet: Pet) {
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Type: ${pet.petType}", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface
+                text = "Type: ${pet.petType}",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
-                text = "Sex: ${pet.petSex}", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface
+                text = "Sex: ${pet.petSex}",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
-                text = "Breed: ${pet.petBreed}", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface
+                text = "Breed: ${pet.petBreed}",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
+    }
+}
+
+@Composable
+fun AddPet(onAddPet: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .padding(4.dp)
+            .wrapContentWidth(), elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        IconButton(
+            modifier = Modifier
+                .height(100.dp)
+                .width(100.dp),
+            onClick = {
+                onAddPet()
+            },
+        ) {
+            Icon(
+                modifier = Modifier.fillMaxSize(),
+                imageVector = Icons.Default.AddCircle,
+                contentDescription = "addPet",
+                tint = MaterialTheme.colorScheme.onBackground,
             )
         }
     }
@@ -308,6 +370,6 @@ fun UserProfileScreenPreview() {
     }
     UserProfileScreen(profileScreenState = profileScreenState, onEditClick = { a, b, c, d, e ->
 
-    }, onCancelEdit = {}, logOut = {})
+    }, onAddPet = {}, onCancelEdit = {}, logOut = {})
 }
 

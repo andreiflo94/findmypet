@@ -44,14 +44,14 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideLoginRepository(remoteApi: RemoteApi, sessionManager: SessionManager): LoginRepository {
+    fun provideLoginRepository(remoteApi: FakeRemoteApi, sessionManager: SessionManager): LoginRepository {
         return LoginRepositoryImpl(remoteApi, sessionManager)
     }
 
 
     @Provides
     @Singleton
-    fun providePetRepository(remoteApi: RemoteApi): PetRepository {
+    fun providePetRepository(remoteApi: FakeRemoteApi): PetRepository {
         return PetRepositoryImpl(remoteApi)
     }
 

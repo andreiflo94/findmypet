@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -23,6 +24,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.heixss.findmypet.presenter.addpet.AddPetScreen
 import com.heixss.findmypet.presenter.common.NavigationEvent
 import com.heixss.findmypet.presenter.common.ObserveAsEvents
 import com.heixss.findmypet.presenter.common.Screen
@@ -38,7 +40,7 @@ fun BottomNavScreen(
 ) {
     val navController = rememberNavController()
     var navigationSelectedItem by rememberSaveable {
-        mutableStateOf(0)
+        mutableIntStateOf(0)
     }
     Scaffold(
         topBar = {
@@ -49,29 +51,30 @@ fun BottomNavScreen(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
             NavigationBar {
-                BottomNavigationItem().bottomNavigationItems().forEachIndexed { index, navigationItem ->
-                    NavigationBarItem(
-                        selected = index == navigationSelectedItem,
-                        label = {
-                            Text(navigationItem.label)
-                        },
-                        icon = {
-                            Icon(
-                                navigationItem.icon,
-                                contentDescription = navigationItem.label
-                            )
-                        },
-                        onClick = {
-                            navigationSelectedItem = index
-                            navController.navigate(navigationItem.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    inclusive = true
+                BottomNavigationItem().bottomNavigationItems()
+                    .forEachIndexed { index, navigationItem ->
+                        NavigationBarItem(
+                            selected = index == navigationSelectedItem,
+                            label = {
+                                Text(navigationItem.label)
+                            },
+                            icon = {
+                                Icon(
+                                    navigationItem.icon,
+                                    contentDescription = navigationItem.label
+                                )
+                            },
+                            onClick = {
+                                navigationSelectedItem = index
+                                navController.navigate(navigationItem.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        inclusive = true
+                                    }
+                                    restoreState = true
                                 }
-                                restoreState = true
                             }
-                        }
-                    )
-                }
+                        )
+                    }
             }
         }
     ) { paddingValues ->
@@ -102,6 +105,9 @@ fun BottomNavScreen(
                             phone = phone,
                             email = email
                         )
+                    },
+                    onAddPet = {
+                        navController.navigate(Screen.AddPet.route)
                     },
                     onCancelEdit = {
                         viewModel.cancelEdit()
@@ -135,6 +141,9 @@ fun BottomNavScreen(
                     onCloseClicked = {
 
                     })
+            }
+            composable(Screen.AddPet.route) {
+                AddPetScreen()
             }
         }
     }

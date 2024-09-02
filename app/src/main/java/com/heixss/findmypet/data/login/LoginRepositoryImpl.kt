@@ -4,6 +4,7 @@ import com.heixss.findmypet.data.common.SessionManager
 import com.heixss.findmypet.data.common.RemoteApi
 import com.heixss.findmypet.domain.login.LoginRepository
 import com.heixss.findmypet.data.Resource
+import com.heixss.findmypet.data.common.FakeRemoteApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -11,7 +12,7 @@ import retrofit2.Response
 import javax.inject.Inject
 
 class LoginRepositoryImpl @Inject constructor(
-    private val remoteApi: RemoteApi,
+    private val remoteApi: FakeRemoteApi,
     private val sessionManager: SessionManager
 ) : LoginRepository {
     override suspend fun login(username: String, password: String): Resource<LoginResponse> {
