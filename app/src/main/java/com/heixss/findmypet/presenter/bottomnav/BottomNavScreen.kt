@@ -25,6 +25,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.heixss.findmypet.presenter.addpet.AddPetScreen
+import com.heixss.findmypet.presenter.addpet.AddPetViewModel
 import com.heixss.findmypet.presenter.common.NavigationEvent
 import com.heixss.findmypet.presenter.common.ObserveAsEvents
 import com.heixss.findmypet.presenter.common.Screen
@@ -143,7 +144,22 @@ fun BottomNavScreen(
                     })
             }
             composable(Screen.AddPet.route) {
-                AddPetScreen()
+                val viewModel = hiltViewModel<AddPetViewModel>()
+                AddPetScreen(
+                    addPetScreenState = viewModel.addPetScreenState.value,
+                    onTypeSelected = { newType ->
+                        viewModel.updateSelectedPetType(newType)
+                    },
+                    onSexSelected = { newSex ->
+                        viewModel.updateSelectedPetSex(newSex)
+                    },
+                    onNameChanged = { newPetName ->
+                        viewModel.updatePetName(newPetName)
+                    },
+                    onBreedChanged = { newBreed ->
+                        viewModel.updateBreed(newBreed)
+                    }
+                )
             }
         }
     }

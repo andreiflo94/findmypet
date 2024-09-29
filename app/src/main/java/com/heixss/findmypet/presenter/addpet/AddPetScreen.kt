@@ -10,7 +10,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -28,8 +27,23 @@ import com.heixss.findmypet.common.DropDown
 import com.heixss.findmypet.common.utils.ImageUtils
 import com.heixss.findmypet.presenter.common.CameraGalleryChooser
 
+data class AddPetScreenState(
+    val petTypeOptions: List<String> = listOf("Cat", "Dog", "Parrot", "Rabbit", "Hamster", "Fish", "Turtle", "Snake"),
+    val petSexOptions: List<String> = listOf("Male", "Female"),
+    val selectedPetType: String = "Cat",
+    val selectedPetSex: String = "Male",
+    val name: String = "",
+    val breed: String = ""
+)
+
 @Composable
-fun AddPetScreen() {
+fun AddPetScreen(
+    addPetScreenState: AddPetScreenState,
+    onSexSelected: (String) -> Unit,
+    onTypeSelected: (String) -> Unit,
+    onNameChanged: (String) -> Unit,
+    onBreedChanged: (String) -> Unit
+) {
     Surface(color = colorScheme.background) {
         Column(
             modifier = Modifier
@@ -45,40 +59,68 @@ fun AddPetScreen() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp, bottom = 10.dp),
-
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 CameraGalleryChooser(imageUtils)
             }
-            PetDetails()
+
+            // Pass the options and current selection to PetDetails composable
+            PetDetails(
+                petSexOptions = addPetScreenState.petSexOptions,
+                petTypeOptions = addPetScreenState.petTypeOptions,
+                selectedPetSex = addPetScreenState.selectedPetSex,
+                selectedPetType = addPetScreenState.selectedPetType,
+                name = addPetScreenState.name,
+                breed = addPetScreenState.breed,
+                onTypeSelected = onTypeSelected,
+                onSexSelected = onSexSelected,
+                onNameChanged = onNameChanged,
+                onBreedChanged = onBreedChanged
+            )
         }
     }
 }
 
 @Composable
 fun PetDetails(
+    petSexOptions: List<String>,
+    petTypeOptions: List<String>,
+    selectedPetSex: String,
+    selectedPetType: String,
+    name: String,
+    breed: String,
+    onSexSelected: (String) -> Unit,
+    onTypeSelected: (String) -> Unit,
+    onNameChanged: (String) -> Unit,
+    onBreedChanged: (String) -> Unit
 ) {
     Column(
         modifier = Modifier.padding(top = 8.dp, bottom = 16.dp, end = 16.dp, start = 16.dp)
     ) {
-        PetTypeDropdown(selectedType = "Cat") {
-
+        PetTypeDropdown(selectedType = selectedPetType, petTypeOptions) {
+            onTypeSelected.invoke(it)
         }
-        PetDetailsItem(label = "name")
-        PetSexDropdown(selectedSex = "Female") {
-
+        PetDetailsItem(label = "name", value = name){
+            onNameChanged.invoke(it)
         }
-        PetDetailsItem(label = "breed")
+        PetSexDropdown(selectedSex = selectedPetSex, petSexOptions) {
+            onSexSelected.invoke(it)
+        }
+        PetDetailsItem(label = "breed", value = breed){
+            onBreedChanged.invoke(it)
+        }
     }
 }
 
 @Composable
 fun PetDetailsItem(
-    label: String
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit
 ) {
     TextField(
-        value = "",
-        onValueChange = {},
+        value = value,
+        onValueChange = { onValueChange.invoke(it) },
         label = {
             Text(
                 text = "$label: ",
@@ -96,30 +138,40 @@ fun PetDetailsItem(
 
 @Composable
 fun PetSexDropdown(
-    selectedSex: String,
-    onSexSelected: (String) -> Unit
+    selectedSex: String, petSexOptions: List<String>, onSexSelected: (String) -> Unit
 ) {
-    val petSexOptions = listOf("Male", "Female")
+
     DropDown(selectedValue = selectedSex, values = petSexOptions, onValueSelected = onSexSelected)
 }
 
 @Composable
 fun PetTypeDropdown(
-    selectedType: String,
-    onTypeSelected: (String) -> Unit
+    selectedType: String, petTypeOptions: List<String>, onTypeSelected: (String) -> Unit
 ) {
-    val petTypeOptions =
-        listOf("Cat", "Dog", "Parrot", "Rabbit", "Hamster", "Fish", "Turtle", "Snake")
+
 
     DropDown(
-        selectedValue = selectedType,
-        values = petTypeOptions,
-        onValueSelected = onTypeSelected
+        selectedValue = selectedType, values = petTypeOptions, onValueSelected = onTypeSelected
     )
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun AddPetScreenPreview() {
-    AddPetScreen()
+    // Mock data for preview
+    val previewState = AddPetScreenState(
+        petSexOptions = listOf("Male", "Female"),
+        petTypeOptions = listOf("Cat", "Dog", "Parrot"),
+        selectedPetSex = "Male",
+        selectedPetType = "Cat"
+    )
+
+    // Mock functions for preview (no actual logic, just empty lambdas)
+    AddPetScreen(
+        addPetScreenState = previewState,
+        onSexSelected = {},
+        onTypeSelected = {},
+        onNameChanged = {},
+        onBreedChanged = {}
+    )
 }
